@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/Users/roberthillary/Desktop/alx-backend/mkdir be_capstone_task_manager/.venv/bin/python" "$0" "$@"
-' '''
+#!/Users/roberthillary/Desktop/alx-backend/task-management-api/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
