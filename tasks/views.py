@@ -7,11 +7,12 @@ from django.utils import timezone
 from .models import Task
 from .serializers import TaskSerializer
 from .permissions import IsOwner
+from rest_framework.permissions import IsAuthenticated
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsAuthenticated, IsOwner]
 
     filterset_fields = ["status", "priority", "due_date"]
     ordering_fields = ["due_date", "priority", "created_at"]
