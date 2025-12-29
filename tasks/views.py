@@ -1,33 +1,29 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
 from django.utils import timezone
-from rest_framework import viewsets, status, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .models import Task
-from .serializers import TaskSerializer
 from .permissions import IsOwner
-from rest_framework.permissions import IsAuthenticated
+from .serializers import TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsOwner]
 
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ["status", "priority", "due_date"]
     ordering_fields = ["due_date", "priority", "created_at"]
     ordering = ["due_date"]
-
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     search_fields = ["title", "description"]
 
     def get_queryset(self):
+     
         return Task.objects.filter(user=self.request.user).order_by(*self.ordering)
-
-    def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -35,13 +31,17 @@ class TaskViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         task = self.get_object()
         if task.status == Task.Status.COMPLETED:
-            raise ValidationError({"detail": "Completed tasks cannot be edited. Mark it incomplete first."})
+            raise ValidationError(
+                {"detail": "Completed tasks cannot be edited. Mark it incomplete first."}
+            )
         return super().update(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         task = self.get_object()
         if task.status == Task.Status.COMPLETED:
-            raise ValidationError({"detail": "Completed tasks cannot be edited. Mark it incomplete first."})
+            raise ValidationError(
+                {"detail": "Completed tasks cannot be edited. Mark it incomplete first."}
+            )
         return super().partial_update(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"])

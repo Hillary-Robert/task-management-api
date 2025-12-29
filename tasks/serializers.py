@@ -8,7 +8,6 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id",
-            "user",
             "title",
             "description",
             "due_date",
@@ -18,25 +17,46 @@ class TaskSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "user", "completed_at", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "completed_at",
+            "created_at",
+            "updated_at",
+        ]
 
     def validate_due_date(self, value):
+        """
+        Ensure due date is today or in the future.
+        """
         if value and value < timezone.localdate():
-            raise serializers.ValidationError("Due date must be today or in the future.")
+            raise serializers.ValidationError(
+                "Due date must be today or in the future."
+            )
         return value
 
     def update(self, instance, validated_data):
-        # Rule: once completed, it cannot be edited unless reverted to incomplete (pending)
+        """
+        Prevent editing completed tasks unless first reverted to pending.
+        Also prevent editing other fields while reverting.
+        """
         incoming_status = validated_data.get("status", instance.status)
 
-        if instance.status == Task.Status.COMPLETED and incoming_status == Task.Status.COMPLETED:
-            
-            editable_fields = {"status"}  #
+        if instance.status == Task.Status.COMPLETED:
 
-            attempted = set(validated_data.keys()) - editable_fields
-            if attempted:
-                raise serializers.ValidationError(
-                    "Completed tasks cannot be edited unless reverted to pending."
-                )
+            # Trying to edit while still completed
+            if incoming_status == Task.Status.COMPLETED:
+                attempted = set(validated_data.keys()) - {"status"}
+                if attempted:
+                    raise serializers.ValidationError(
+                        {"detail": "Completed tasks cannot be edited. Mark it incomplete first."}
+                    )
+
+            # Trying to revert but also change other fields
+            if incoming_status == Task.Status.PENDING:
+                attempted = set(validated_data.keys()) - {"status"}
+                if attempted:
+                    raise serializers.ValidationError(
+                        {"detail": "First mark task incomplete, then update other fields in a new request."}
+                    )
 
         return super().update(instance, validated_data)
