@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from accounts.views import LogoutView
 
 from tasks.views import TaskViewSet
 from accounts.views import RegisterView, LoginView, UserViewSet
@@ -32,4 +33,5 @@ urlpatterns = [
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/", include(router.urls)),
+    path("api/logout/", LogoutView.as_view(), name="logout"),
 ]

@@ -4,6 +4,9 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
 
 from .serializers import UserSerializer
 
@@ -32,3 +35,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
+
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Delete the token so it can't be used again
+        request.user.auth_token.delete()
+        return Response({"detail": "Logged out successfully."}, status=status.HTTP_200_OK)
