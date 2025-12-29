@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.utils import timezone
+from rest_framework import viewsets, status, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Task
 from .serializers import TaskSerializer
@@ -17,6 +19,12 @@ class TaskViewSet(viewsets.ModelViewSet):
     filterset_fields = ["status", "priority", "due_date"]
     ordering_fields = ["due_date", "priority", "created_at"]
     ordering = ["due_date"]
+
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ["title", "description"]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user).order_by(*self.ordering)
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
