@@ -4,19 +4,23 @@ A backend Task Management system built with Django and Django REST Framework.
 This project is part of my Backend Capstone Project.
 
 ## Features
-- User registration & login
+- User registration, login, and logout (Token Authentication)
 - Create, Read, Update, and Delete tasks
 - Mark tasks as complete or incomplete
+- Prevent editing completed tasks unless reverted
 - Task filtering by status, priority, and due date
+- Task search by title or description
+- Task ordering and pagination
 - Only the task owner can access their tasks
 
 ## Tech Stack
 - Django
 - Django REST Framework
 - SQLite (Development)
-- PythonAnywhere / Heroku (Deployment)
+- Postman (API Testing)
 
 ## Getting Started
+
 ```bash
 git clone https://github.com/Hillary-Robert/task-management-api.git
 cd task-management-api
@@ -24,31 +28,78 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 
-## Progress
 
-So far, the following has been implemented and tested successfully:
+Authentication
 
-### Authentication
-- User login using Django REST Framework Token Authentication
-- Tokens are generated on login and required for all protected endpoints
-- Authentication tested using Postman
+This API uses token-based authentication.
 
-### Tasks API
-- Authenticated users can:
-  - Create a task
-  - View all their tasks
-- Each task is automatically linked to the logged-in user
-- Tasks created by one user are not accessible by other users
+Include the token in request headers:
 
-### Tested Endpoints
-- `POST /api/login/` – returns authentication token
-- `GET /api/` – API root (authenticated)
-- `GET /api/tasks/` – list user’s tasks
-- `POST /api/tasks/` – create a new task
+Authorization: Token <your_token>
 
-### Tools Used
-- Postman for API testing
-- Django ORM for database interactions
-- SQLite for local development
+API Endpoints
+Authentication
 
-Further features such as task updates, completion logic, filtering, pagination, testing, and deployment will be implemented in the next phase.
+POST /api/register/
+
+POST /api/login/
+
+POST /api/logout/
+
+Tasks
+
+GET /api/tasks/ – list user’s tasks
+
+POST /api/tasks/ – create a task
+
+GET /api/tasks/<id>/ – retrieve a task
+
+PUT/PATCH /api/tasks/<id>/ – update a task
+
+DELETE /api/tasks/<id>/ – delete a task
+
+POST /api/tasks/<id>/complete/ – mark task as complete
+
+POST /api/tasks/<id>/incomplete/ – mark task as incomplete
+
+Query Features
+
+Filtering:
+
+/api/tasks/?status=pending
+
+/api/tasks/?priority=high
+
+Search:
+
+/api/tasks/?search=meeting
+
+Ordering:
+
+/api/tasks/?ordering=due_date
+
+/api/tasks/?ordering=-created_at
+
+Pagination:
+
+/api/tasks/?page=2
+
+Permissions & Security
+
+Only authenticated users can access the API
+
+Users can only access tasks they own
+
+Object-level permissions enforced using custom permissions
+
+Testing
+
+All endpoints tested using Postman
+
+Authentication, permissions, filtering, search, ordering, and pagination verified
+
+
+Status
+
+Core backend functionality is complete.
+The project is ready for deployment and final review.

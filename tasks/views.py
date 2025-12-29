@@ -13,7 +13,12 @@ from .serializers import TaskSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ["retrieve", "update", "partial_update", "destroy", "complete", "incomplete"]:
+            return [IsAuthenticated(), IsOwner()]
+        return [IsAuthenticated()]
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ["status", "priority", "due_date"]
