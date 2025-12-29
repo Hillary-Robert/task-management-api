@@ -1,11 +1,12 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from django.utils import timezone
 
 from .models import Task
 from .serializers import TaskSerializer
 from .permissions import IsOwner
-from django.utils import timezone
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -17,11 +18,22 @@ class TaskViewSet(viewsets.ModelViewSet):
     ordering = ["due_date"]
 
     def get_queryset(self):
-        
-        return Task.objects.filter(user=self.request.user).order_by(*self.ordering)
+        return Task.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        task = self.get_object()
+        if task.status == Task.Status.COMPLETED:
+            raise ValidationError({"detail": "Completed tasks cannot be edited. Mark it incomplete first."})
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        task = self.get_object()
+        if task.status == Task.Status.COMPLETED:
+            raise ValidationError({"detail": "Completed tasks cannot be edited. Mark it incomplete first."})
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
