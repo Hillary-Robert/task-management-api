@@ -1,105 +1,144 @@
 # Task Management API
 
-A backend Task Management system built with Django and Django REST Framework.
-This project is part of my Backend Capstone Project.
+A backend **Task Management API** built with **Django** and **Django REST Framework**.  
+This project is part of my **Backend Capstone Project** and demonstrates core backend development skills such as authentication, permissions, CRUD operations, filtering, and deployment.
 
-## Features
-- User registration, login, and logout (Token Authentication)
-- Create, Read, Update, and Delete tasks
-- Mark tasks as complete or incomplete
-- Prevent editing completed tasks unless reverted
-- Task filtering by status, priority, and due date
-- Task search by title or description
+---
+
+##  Features
+
+- User registration, login, and logout using **Token Authentication**
+- Create, Read, Update, and Delete (CRUD) tasks
+- Mark tasks as **complete** or **incomplete**
+- Prevent editing of completed tasks unless reverted to pending
+- Task filtering by **status**, **priority**, and **due date**
+- Task search by **title** or **description**
 - Task ordering and pagination
-- Only the task owner can access their tasks
+- Object-level permissions (users can only access their own tasks)
 
-## Tech Stack
+---
+
+## 🌍 Deployment
+
+The API is deployed on **PythonAnywhere** and is publicly accessible.
+
+**Base URL:**  
+
+https://hillstech.pythonanywhere.com/
+
+
+**API Root:**  
+https://hillstech.pythonanywhere.com/api/
+
+
+
+All task-related endpoints require authentication using a token.
+
+---
+
+## 🛠 Tech Stack
+
 - Django
 - Django REST Framework
-- SQLite (Development)
-- Postman (API Testing)
+- SQLite (development database)
+- Postman (API testing)
+- PythonAnywhere (deployment)
 
-## Getting Started
+---
 
+## ⚙️ Getting Started
+
+### Clone the repository
 ```bash
 git clone https://github.com/Hillary-Robert/task-management-api.git
 cd task-management-api
+
+
+
+## Install dependencies
+
 pip install -r requirements.txt
+
+## Run migrations
 python manage.py migrate
-python manage.py runserver
 
 
-Authentication
+## Start the development server
+
+
+### Authentication
 
 This API uses token-based authentication.
 
-Include the token in request headers:
+After logging in, include the token in request headers:
 
 Authorization: Token <your_token>
+
+
 
 API Endpoints
 Authentication
 
-POST /api/register/
+POST /api/register/ – Register a new user
 
-POST /api/login/
+POST /api/login/ – Login and receive an authentication token
 
-POST /api/logout/
+POST /api/logout/ – Logout and invalidate token
 
 Tasks
 
-GET /api/tasks/ – list user’s tasks
+GET /api/tasks/ – List all tasks for the authenticated user
 
-POST /api/tasks/ – create a task
+POST /api/tasks/ – Create a new task
 
-GET /api/tasks/<id>/ – retrieve a task
+GET /api/tasks/<id>/ – Retrieve a specific task
 
-PUT/PATCH /api/tasks/<id>/ – update a task
+PUT /api/tasks/<id>/ – Update a task
 
-DELETE /api/tasks/<id>/ – delete a task
+PATCH /api/tasks/<id>/ – Partially update a task
 
-POST /api/tasks/<id>/complete/ – mark task as complete
+DELETE /api/tasks/<id>/ – Delete a task
 
-POST /api/tasks/<id>/incomplete/ – mark task as incomplete
+POST /api/tasks/<id>/complete/ – Mark task as completed
 
-Query Features
+POST /api/tasks/<id>/incomplete/ – Mark task as pending
 
-Filtering:
 
+Filtering
 /api/tasks/?status=pending
-
 /api/tasks/?priority=high
 
-Search:
-
+Search
 /api/tasks/?search=meeting
 
-Ordering:
-
+Ordering
 /api/tasks/?ordering=due_date
-
 /api/tasks/?ordering=-created_at
 
-Pagination:
-
+Pagination
 /api/tasks/?page=2
+
+
 
 Permissions & Security
 
 Only authenticated users can access the API
 
-Users can only access tasks they own
+Users can only view and modify their own tasks
 
-Object-level permissions enforced using custom permissions
+Object-level permissions enforced using a custom permission class
+
+Completed tasks cannot be edited unless reverted to pending
+
 
 Testing
 
 All endpoints tested using Postman
 
-Authentication, permissions, filtering, search, ordering, and pagination verified
+Authentication flow verified
 
+CRUD operations tested
 
-Status
+Filtering, searching, ordering, and pagination confirmed
 
-Core backend functionality is complete.
-The project is ready for deployment and final review.
+Permission restrictions validated
